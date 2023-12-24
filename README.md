@@ -32,7 +32,7 @@ $ python3 generate_nodes_array_json.py
 
 `color_mapping.html` をブラウザで開く
 
-【補足1】動作確認は `Chrome` で実施
+【補足1】動作確認は `Chrome` で実施  
 【補足2】CDNでjQueryライブラリ等を読み込むためインターネット環境が必要
 
 ----
