@@ -15,9 +15,10 @@ OFFSET_REF_ID = 1000000000
 
 
 if __name__ == '__main__':
-    image_files = glob.glob('./images/**.jpg') + glob.glob('./images/**.JPG') + glob.glob('./images/**.jpeg')
+    image_files = glob.glob('./images/**/*.jpg', recursive=True) + glob.glob('./images/**/*.JPG', recursive=True) + glob.glob('./images/**/*.jpeg', recursive=True)
+    image_files = list(set(image_files))
     image_files = sorted(image_files)
-    #image_files = glob.glob('./refs/**.png')
+    #image_files = glob.glob('./refs/*.png')
 
     data_size = len(image_files)
     json_data = []
