@@ -12,6 +12,41 @@ JSON_FILE_NAME = 'nodes_array.json.js'
 NODE_SIZE = 10
 ZOOM_RATIO = NODE_SIZE/2
 OFFSET_REF_ID = 1000000000
+IMAGE_WIDTH = 100
+
+
+def rotateImage(img, orientation):
+    """
+    画像ファイルをOrientationの値に応じて回転させる
+    """
+    #orientationの値に応じて画像を回転させる
+    if orientation == 1:
+        pass
+    elif orientation == 2:
+        #左右反転
+        img_rotate = img.transpose(Image.FLIP_LEFT_RIGHT)
+    elif orientation == 3:
+        #180度回転
+        img_rotate = img.transpose(Image.ROTATE_180)
+    elif orientation == 4:
+        #上下反転
+        img_rotate = img.transpose(Image.FLIP_TOP_BOTTOM)
+    elif orientation == 5:
+        #左右反転して90度回転
+        img_rotate = img.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_90)
+    elif orientation == 6:
+        #270度回転
+        img_rotate = img.transpose(Image.ROTATE_270)
+    elif orientation == 7:
+        #左右反転して270度回転
+        img_rotate = img.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.ROTATE_270)
+    elif orientation == 8:
+        #90度回転
+        img_rotate = img.transpose(Image.ROTATE_90)
+    else:
+        pass
+
+    return img_rotate
 
 
 if __name__ == '__main__':
@@ -26,15 +61,39 @@ if __name__ == '__main__':
         id = index + 1
         print(f'{id}/{data_size}')
 
-        # 画像読み込み
+        # 画像読み込み ⇒ 画像縮小
         im = Image.open(image_file)
-        data = im.getdata()
+        new_height = int(im.height * IMAGE_WIDTH / im.width)
+        im_resize = im.resize((IMAGE_WIDTH, new_height))
+        data = im_resize.getdata()
         arr2d = np.array(list(data))
+        try:
+            exifinfo = im._getexif()
+            orientation = exifinfo.get(0x112, 1)
+            im_resize = rotateImage(im_resize, orientation)
+        except:
+            pass
+        thumbnail_file = f'./thumbnail/{index}.jpg'
+        im_resize.save(thumbnail_file)
 
-        # 平均RGB/HSV算出
-        ave_r = np.average(arr2d[0:,0])
-        ave_g = np.average(arr2d[0:,1])
-        ave_b = np.average(arr2d[0:,2])
+        # 中央重点係数作成
+        coef = []
+        image_height = int(arr2d.shape[0] / IMAGE_WIDTH)
+        center_x = float((IMAGE_WIDTH - 1) / 2)
+        center_y = float((image_height - 1) / 2)
+        max_dist = max(center_x, center_y)
+        for y in range(0, image_height):
+          for x in range(0, IMAGE_WIDTH):
+              dist = math.sqrt((x - center_x)**2 + (y - center_y)**2)
+              angle = math.atan(dist / max_dist)
+              coef.append(math.cos(angle))
+        coef_np = np.array(coef)
+        sum_coef = np.sum(coef_np)
+
+        # 中央重点で平均RGB/HSV算出
+        ave_r = np.sum(arr2d[0:,0] * coef_np) / sum_coef
+        ave_g = np.sum(arr2d[0:,1] * coef_np) / sum_coef
+        ave_b = np.sum(arr2d[0:,2] * coef_np) / sum_coef
         ave_h, ave_s, ave_v = colorsys.rgb_to_hsv(ave_r/255,ave_g/255,ave_b/255)
         ave_h = int(360 * ave_h)
         ave_s = int(100 * ave_s)
@@ -53,7 +112,8 @@ if __name__ == '__main__':
                 'x': True,
                 'y': True,
             },
-            'image': image_file,
+            'image': thumbnail_file,
+            'clipboard': image_file,
             'title': f'{image_file}\nHSV:{ave_h},{ave_s},{ave_v}',
             'x': x * ZOOM_RATIO,
             'y': y * ZOOM_RATIO,

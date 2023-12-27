@@ -49,6 +49,7 @@ $ python3 generate_nodes_array_json.py
 | 3 | [JavaScriptでJSONファイルをローカルから読み込みするには](https://pisuke-code.com/javascript-load-local-json-file/) | [JavaScript] ローカルjsonを読み込む |
 | 4 | [【サンプルコードあり】クリップボードへのコピー機能をjQueryで実装！](https://ungifted.tech/blog/copy-to-clipboard/) | [JavaScript] クリップボードに任意の文字列をコピー |
 | 5 | [colorsysでライブラリ不要でRGB→HSV変換をする](https://blog.shikoan.com/colorsys/) | [Python] RGB→HSV変換 |
+| 6 | [【Python】EXIF情報に合わせて画像を回転させる](https://max999blog.com/python-rotate-image-by-exif-orientation/) | [Python] 縮小で向きが変にならないように画像を回転 |
 
 ----
 ## 以上

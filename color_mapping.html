@@ -42,8 +42,8 @@
                         var nodeId = params.nodes[0];
                         var node = nodes.get(nodeId);
                         console.log(node.image + ', x=' + node.x + ', y=' + node.y);
-                        navigator.clipboard.writeText(node.image);
-                        $('#msgbox').text("クリップボードに " + node.image + " をコピー");
+                        navigator.clipboard.writeText(node.clipboard);
+                        $('#msgbox').text("クリップボードに " + node.clipboard + " をコピー");
                         setTimeout(function(){
                             $('#msgbox').text("");
                         }, 1500 );
